@@ -9,6 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { CreateBoardDto } from './dto/create.board.dto';
 
 @Controller('board')
 export class BoardController {
@@ -20,13 +21,13 @@ export class BoardController {
   }
 
   @Get(':id')
-  getBoard(@Param() param) {
-    return this.boardService.getBoard(param);
+  getBoard(@Param('id') id) {
+    return this.boardService.getBoard(id);
   }
 
-  @Post(':id')
-  createBoard(@Body() body, @Param() param) {
-    return this.boardService.createBoard(body, param);
+  @Post()
+  createBoard(@Body() createBoardDto: CreateBoardDto): Board {
+    return this.boardService.createBoard(createBoardDto);
   }
 
   @Delete(':id')
