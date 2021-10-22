@@ -1,5 +1,5 @@
-import { Board } from './board.model';
-import { BoardService } from './board.service';
+import { Board } from '../model/board.model';
+import { BoardService } from '../service/board.service';
 import {
   Body,
   Controller,
@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { CreateBoardDto } from './dto/create.board.dto';
+import { CreateBoardDto } from '../dto/create.board.dto';
 
 @Controller('board')
 export class BoardController {
@@ -31,12 +31,12 @@ export class BoardController {
   }
 
   @Delete(':id')
-  deleteBoard(@Param() param) {
-    return this.boardService.deleteBoard(param);
+  deleteBoard(@Param('id') id: string) {
+    return this.boardService.deleteBoard(id);
   }
 
   @Put(':id')
-  updateBoard(@Body() body, @Param() param) {
-    return this.boardService.updateBoard(body, param);
+  updateBoard(@Param('id') id: string, @Body() createBoardDto: CreateBoardDto) {
+    return this.boardService.updateBoard(id, createBoardDto);
   }
 }
