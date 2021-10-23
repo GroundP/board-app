@@ -1,3 +1,4 @@
+import { BoardStatusValidationPipe } from './../pipe/board.status.validation.pipe';
 import { Board } from '../model/board.model';
 import { BoardService } from '../service/board.service';
 import {
@@ -6,8 +7,10 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  UsePipes,
 } from '@nestjs/common';
 import { CreateBoardDto } from '../dto/create.board.dto';
 
@@ -21,12 +24,16 @@ export class BoardController {
   }
 
   @Get(':id')
-  getBoard(@Param('id') id) {
-    return this.boardService.getBoard(id);
+  getBoard(@Param('id', ParseIntPipe) id: number) {
+    return this.boardService.getBoardById(id);
   }
 
   @Post()
-  createBoard(@Body() createBoardDto: CreateBoardDto): Board {
+  createBoard(
+    @Body() createBoardDto: CreateBoardDto,
+    @Body('status', BoardStatusValidationPipe) status,
+  ): Board {
+    console.log(status);
     return this.boardService.createBoard(createBoardDto);
   }
 
