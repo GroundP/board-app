@@ -1,66 +1,52 @@
+import { BoardRepository } from './../repository/board.repository';
 import { CreateBoardDto } from '../dto/create.board.dto';
-import { Board, BoardStatus } from '../model/board.model';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { v1 as uuid } from 'uuid';
+import { Board } from '../entity/board.entity';
+import { BoardStatus } from '../board.status';
 
 @Injectable()
 export class BoardService {
-  private boards: Board[] = []; // DB 대신 임시 메모리 데이터
+  constructor(private readonly boardRepository: BoardRepository) {}
 
-  getAllBoards(): Board[] {
-    return this.boards;
-    //return 'getAllBoards';
+  async getAllBoards(): Promise<Board[]> {
+    const data = this.boardRepository.find();
+    return data;
   }
 
-  getBoardById(id): Board {
+  async getBoardById(id): Promise<Board> {
     console.log(id);
 
-    const boardById = this.boards.find((elem) => {
-      return elem.id === id;
-    });
+    const found = await this.boardRepository.findOne(id);
 
-    if (!boardById)
+    if (!found) {
       throw new NotFoundException(`Can't find Board with id ${id}`);
+    }
 
-    return boardById;
+    return found;
   }
 
-  createBoard(createBoardDto: CreateBoardDto) {
-    console.log(createBoardDto.title);
-    console.log(createBoardDto.description);
-
-    const { title, description, status } = createBoardDto;
-    const newBoard: Board = {
-      id: uuid(),
-      title,
-      description,
-      status: status == 'PUBLIC' ? BoardStatus.PUBLIC : BoardStatus.PRIVATE,
-    };
-
-    this.boards.push(newBoard);
-    return newBoard;
+  async createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto);
   }
 
-  deleteBoard(id: string): Board {
-    console.log(id);
-    const boardById = this.getBoardById(id); // 없는 id라면 getBoardById안에 예외처리 있으므로 여기선 따로 처리 안함
-    this.boards = this.boards.filter((elem) => {
-      return elem.id !== boardById.id;
-    });
-
-    return boardById;
+  async deleteBoard(id: string): Promise<Board> {
+    const board = this.getBoardById(id);
+    await this.boardRepository.delete(id);
+    return board;
   }
 
-  updateBoard(id: string, createBoardDto: CreateBoardDto): Board {
-    console.log(id);
-    console.log(createBoardDto);
-
-    const boardById = this.getBoardById(id);
-
+  async updateBoard(
+    id: string,
+    createBoardDto: CreateBoardDto,
+  ): Promise<Board> {
+    const boardById = await this.getBoardById(id);
     const { title, description } = createBoardDto;
 
     boardById.title = title;
     boardById.description = description;
+
+    await this.boardRepository.save(boardById);
 
     return boardById;
   }

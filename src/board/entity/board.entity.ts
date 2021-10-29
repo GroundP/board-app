@@ -1,4 +1,4 @@
-import { BoardStatus } from './../model/board.model';
+import { BoardStatus } from './../board.status';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
