@@ -2,7 +2,7 @@ import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class AuthCredentialDto {
   @IsString()
-  @MinLength(4)
+  @MinLength(3)
   @MaxLength(20)
   username: string;
 
